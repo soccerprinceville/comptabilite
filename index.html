@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion — Comptabilité du club</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-connexion">
+
+  <div class="carte">
+    <div class="logo">
+      <strong>Comptabilité du club</strong>
+      <span>ET1 · EOP</span>
+    </div>
+
+    <form id="form-connexion">
+      <label for="courriel">Courriel</label>
+      <input type="email" id="courriel" required autocomplete="username">
+
+      <label for="mot-de-passe">Mot de passe</label>
+      <input type="password" id="mot-de-passe" required autocomplete="current-password">
+
+      <p class="erreur" id="message-erreur"></p>
+
+      <button type="submit" class="bouton" style="width:100%">Se connecter</button>
+    </form>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script>
+    // Si déjà connecté, on saute directement au tableau de bord.
+    auth.onAuthStateChanged((user) => {
+      if (user) window.location.href = "dashboard.html";
+    });
+
+    document.getElementById("form-connexion").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const erreurEl = document.getElementById("message-erreur");
+      erreurEl.style.display = "none";
+      const courriel = document.getElementById("courriel").value.trim();
+      const motDePasse = document.getElementById("mot-de-passe").value;
+      try {
+        await auth.signInWithEmailAndPassword(courriel, motDePasse);
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        erreurEl.textContent = "Courriel ou mot de passe invalide.";
+        erreurEl.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion — Comptabilité du club</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="entete">
+    <div class="titre">
+      <h1>Comptabilité du club</h1>
+      <span id="entete-utilisateur"></span>
+    </div>
+    <div>
+      <nav style="display:inline"><a href="dashboard.html">Accueil</a></nav>
+      <button id="bouton-deconnexion">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="carte">
+      <h2>Personnes à rembourser</h2>
+      <ul class="liste-simple" id="liste-personnes"></ul>
+      <form id="form-personne">
+        <label for="personne-nom">Nom</label>
+        <input type="text" id="personne-nom" required>
+        <label for="personne-specimen">Spécimen de chèque (photo ou PDF)</label>
+        <input type="file" id="personne-specimen" accept=".pdf,.jpg,.jpeg,.png,.heic" required>
+        <p class="erreur" id="personne-erreur"></p>
+        <button type="submit" class="bouton" id="personne-bouton">Ajouter</button>
+      </form>
+    </div>
+
+    <div class="carte">
+      <h2>Catégories</h2>
+      <ul class="liste-simple" id="liste-categories"></ul>
+      <form id="form-categorie">
+        <label for="categorie-nom">Nouvelle catégorie</label>
+        <input type="text" id="categorie-nom" required>
+        <button type="submit" class="bouton">Ajouter</button>
+      </form>
+    </div>
+
+    <div class="carte">
+      <h2>Destinataires du courriel « demande à payer »</h2>
+      <p class="aide">Ces personnes recevront le courriel avec le lien de confirmation de paiement.</p>
+      <ul class="liste-simple" id="liste-destinataires"></ul>
+      <form id="form-destinataire">
+        <label for="destinataire-nom">Nom</label>
+        <input type="text" id="destinataire-nom" required>
+        <label for="destinataire-courriel">Courriel</label>
+        <input type="email" id="destinataire-courriel" required>
+        <button type="submit" class="bouton">Ajouter</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/gestion.js"></script>
+</body>
+</html>

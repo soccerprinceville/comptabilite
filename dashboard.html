@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord — Comptabilité du club</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="entete">
+    <div class="titre">
+      <h1>Comptabilité du club</h1>
+      <span id="entete-utilisateur"></span>
+    </div>
+    <div>
+      <button id="bouton-deconnexion">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="menu-accueil">
+      <a class="tuile" href="nouvelle-demande.html">
+        <h3>Nouvelle demande</h3>
+        <p>Faire une demande de remboursement pour une personne.</p>
+      </a>
+      <a class="tuile" href="suivi.html" data-role-requise="comptable">
+        <h3>Suivi de la comptabilité</h3>
+        <p>Demandes en attente, en cours de paiement et payées.</p>
+      </a>
+      <a class="tuile" href="gestion.html" data-role-requise="comptable">
+        <h3>Gestion</h3>
+        <p>Personnes à rembourser, catégories, destinataires du courriel.</p>
+      </a>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script>
+    protegerPage(["comptable", "directeur"]);
+  </script>
+</body>
+</html>

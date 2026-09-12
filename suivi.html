@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivi de la comptabilité</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="entete">
+    <div class="titre">
+      <h1>Comptabilité du club</h1>
+      <span id="entete-utilisateur"></span>
+    </div>
+    <div>
+      <nav style="display:inline"><a href="dashboard.html">Accueil</a></nav>
+      <button id="bouton-deconnexion">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="carte">
+      <h2>Suivi des demandes</h2>
+      <div class="onglets">
+        <button class="onglet actif" data-statut="en_attente">En attente</button>
+        <button class="onglet" data-statut="en_cours_paiement">En cours de paiement</button>
+        <button class="onglet" data-statut="payee">Payées</button>
+      </div>
+      <table class="demandes">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Personne</th>
+            <th>Montant</th>
+            <th>Catégorie</th>
+            <th>Statut</th>
+            <th>Pièce jointe</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="corps-tableau"></tbody>
+      </table>
+      <p id="message-vide" class="aide" style="display:none">Aucune demande dans cette catégorie.</p>
+    </div>
+  </main>
+
+  <!-- Fenêtre modale d'approbation -->
+  <div id="modale-approbation" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;">
+    <div class="carte" style="width:380px;">
+      <h2>Approuver la demande</h2>
+      <p id="modale-resume" class="aide"></p>
+      <p id="modale-alerte-specimen" class="erreur"></p>
+
+      <label for="modale-categorie">Catégorie</label>
+      <select id="modale-categorie" required></select>
+
+      <p class="erreur" id="modale-erreur"></p>
+
+      <button class="bouton" id="modale-confirmer">Approuver et envoyer le courriel</button>
+      <button class="bouton secondaire" id="modale-annuler">Annuler</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/suivi.js"></script>
+</body>
+</html>

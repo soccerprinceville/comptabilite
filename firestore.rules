@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function estConnecte() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function estComptable() {
+      return estConnecte() && role() == 'comptable';
+    }
+
+    // Les comptes sont créés manuellement depuis la console Firebase.
+    match /users/{userId} {
+      allow read: if estConnecte();
+      allow write: if false;
+    }
+
+    match /categories/{id} {
+      allow read: if estConnecte();
+      allow write: if estComptable();
+    }
+
+    match /personnes/{id} {
+      allow read: if estConnecte();
+      allow write: if estComptable();
+    }
+
+    match /destinataires/{id} {
+      allow read: if estComptable();
+      allow write: if estComptable();
+    }
+
+    // Directeur et comptable peuvent créer une demande.
+    // Seul le comptable peut la modifier (approbation).
+    // La confirmation de paiement passe par Apps Script (compte de service),
+    // qui n'est pas soumis à ces règles.
+    match /demandes/{id} {
+      allow read: if estConnecte();
+      allow create: if estConnecte()
+                    && request.resource.data.creePar == request.auth.uid
+                    && request.resource.data.statut == 'en_attente';
+      allow update: if estComptable();
+      allow delete: if false;
+    }
+  }
+}
