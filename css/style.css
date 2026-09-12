@@ -25,24 +25,36 @@ body {
 a { color: var(--vert-club); }
 
 header.entete {
-  background: var(--vert-club-fonce);
+  position: relative;
+  background: linear-gradient(120deg, var(--vert-club-fonce) 0%, var(--vert-club) 65%, #024099 100%);
+  background-image:
+    repeating-linear-gradient(120deg, rgba(255,255,255,0.05) 0 14px, transparent 14px 32px),
+    linear-gradient(120deg, var(--vert-club-fonce) 0%, var(--vert-club) 65%, #024099 100%);
   color: var(--blanc);
-  padding: 12px 24px;
+  padding: 14px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 3px solid var(--vert-club);
+  box-shadow: 0 4px 14px rgba(0,20,60,0.35);
+  border-bottom: 3px solid var(--or);
+  overflow: hidden;
 }
 
 header.entete .titre {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
 }
 
 header.entete .titre img.logo {
-  height: 42px;
+  height: 48px;
   width: auto;
+  background: var(--blanc);
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.35);
 }
 
 header.entete .titre .textes {
@@ -52,25 +64,32 @@ header.entete .titre .textes {
 }
 
 header.entete .titre h1 {
-  font-size: 17px;
+  font-size: 18px;
   margin: 0;
-  font-weight: 600;
-  letter-spacing: 0.2px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 header.entete .titre .textes span {
   color: var(--or);
   font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 header.entete nav a {
   color: var(--blanc);
   text-decoration: none;
-  margin-left: 18px;
+  margin-left: 20px;
   font-size: 14px;
-  opacity: 0.85;
+  font-weight: 600;
+  opacity: 0.88;
   border-bottom: 2px solid transparent;
-  padding-bottom: 3px;
+  padding-bottom: 4px;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+  position: relative;
+  z-index: 1;
 }
 
 header.entete nav a:hover,
@@ -80,13 +99,21 @@ header.entete nav a.actif {
 }
 
 #bouton-deconnexion {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.5);
   color: var(--blanc);
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: var(--rayon);
   cursor: pointer;
   font-size: 13px;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+  transition: background 0.15s ease;
+}
+
+#bouton-deconnexion:hover {
+  background: rgba(255,255,255,0.2);
 }
 
 main {
