@@ -9,8 +9,11 @@
 <body>
   <header class="entete">
     <div class="titre">
-      <h1>Comptabilité du club</h1>
-      <span id="entete-utilisateur"></span>
+      <img class="logo" src="assets/logo-rockets.png" alt="Logo Rockets de Princeville">
+      <div class="textes">
+        <h1>Comptabilité du club</h1>
+        <span id="entete-utilisateur"></span>
+      </div>
     </div>
     <div>
       <nav style="display:inline"><a href="dashboard.html">Accueil</a></nav>
@@ -19,6 +22,15 @@
   </header>
 
   <main>
+    <div class="carte">
+      <h2>Solde du compte</h2>
+      <p class="aide">Ce solde sert de point de départ pour la colonne « Solde » de l'écran Suivi.</p>
+      <label for="solde-initial">Solde initial ($)</label>
+      <input type="number" id="solde-initial" step="0.01">
+      <p class="erreur" id="solde-erreur"></p>
+      <button type="button" class="bouton" id="solde-bouton">Enregistrer</button>
+    </div>
+
     <div class="carte">
       <h2>Personnes à rembourser</h2>
       <ul class="liste-simple" id="liste-personnes"></ul>

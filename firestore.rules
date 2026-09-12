@@ -35,6 +35,11 @@ service cloud.firestore {
       allow write: if estComptable();
     }
 
+    match /parametres/{id} {
+      allow read: if estComptable();
+      allow write: if estComptable();
+    }
+
     // Directeur et comptable peuvent créer une demande.
     // Seul le comptable peut la modifier (approbation).
     // La confirmation de paiement passe par Apps Script (compte de service),
