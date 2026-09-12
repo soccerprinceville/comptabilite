@@ -1,7 +1,29 @@
 protegerPage(["comptable"]).then(() => {
+  chargerSoldeInitial();
   chargerPersonnes();
   chargerCategories();
   chargerDestinataires();
+});
+
+// --- Solde initial du compte ---
+
+async function chargerSoldeInitial() {
+  const doc = await db.collection("parametres").doc("general").get();
+  const champ = document.getElementById("solde-initial");
+  champ.value = doc.exists && typeof doc.data().soldeInitial === "number" ? doc.data().soldeInitial : 0;
+}
+
+document.getElementById("solde-bouton").addEventListener("click", async () => {
+  const champ = document.getElementById("solde-initial");
+  const erreurEl = document.getElementById("solde-erreur");
+  erreurEl.style.display = "none";
+  const valeur = parseFloat(champ.value);
+  if (isNaN(valeur)) {
+    erreurEl.textContent = "Entrez un montant valide.";
+    erreurEl.style.display = "block";
+    return;
+  }
+  await db.collection("parametres").doc("general").set({ soldeInitial: valeur }, { merge: true });
 });
 
 // --- Personnes à rembourser ---

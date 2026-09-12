@@ -1,5 +1,4 @@
 let profilActuel = null;
-let statutActuel = "en_attente";
 let demandeSelectionnee = null;
 
 protegerPage(["comptable"]).then((profil) => {
@@ -7,24 +6,23 @@ protegerPage(["comptable"]).then((profil) => {
   chargerDemandes();
 });
 
-document.querySelectorAll(".onglet").forEach((bouton) => {
-  bouton.addEventListener("click", () => {
-    document.querySelectorAll(".onglet").forEach(b => b.classList.remove("actif"));
-    bouton.classList.add("actif");
-    statutActuel = bouton.dataset.statut;
-    chargerDemandes();
-  });
-});
+async function obtenirSoldeInitial() {
+  const doc = await db.collection("parametres").doc("general").get();
+  return doc.exists && typeof doc.data().soldeInitial === "number" ? doc.data().soldeInitial : 0;
+}
 
 async function chargerDemandes() {
   const corps = document.getElementById("corps-tableau");
   const messageVide = document.getElementById("message-vide");
   corps.innerHTML = "";
 
-  const snap = await db.collection("demandes")
-    .where("statut", "==", statutActuel)
-    .orderBy("dateCreation", "desc")
-    .get();
+  const soldeInitial = await obtenirSoldeInitial();
+  document.getElementById("ligne-solde-initial").textContent =
+    `Solde initial du compte : ${formaterMontant(soldeInitial)} (modifiable dans Gestion). Chaque demande, même en attente, est déduite du solde ci-dessous.`;
+
+  // Ordre chronologique (la plus ancienne en premier) pour que le solde
+  // se lise naturellement de ligne en ligne, comme un relevé bancaire.
+  const snap = await db.collection("demandes").orderBy("dateCreation", "asc").get();
 
   if (snap.empty) {
     messageVide.style.display = "block";
@@ -32,13 +30,19 @@ async function chargerDemandes() {
   }
   messageVide.style.display = "none";
 
+  let solde = soldeInitial;
+
   snap.forEach((doc) => {
     const d = doc.data();
+    solde -= Number(d.montant) || 0;
+    const soldeNegatif = solde < 0;
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${formaterDate(d.dateCreation)}</td>
       <td>${d.personneNom}</td>
       <td class="mono">${formaterMontant(d.montant)}</td>
+      <td class="mono" style="${soldeNegatif ? "color:var(--rouge);font-weight:600;" : ""}">${formaterMontant(solde)}</td>
       <td>${d.categorie || "—"}</td>
       <td><span class="badge ${d.statut}">${libelleStatut(d.statut)}</span></td>
       <td><a href="${d.pieceJointeUrl}" target="_blank" rel="noopener">Voir</a></td>
@@ -63,7 +67,6 @@ async function ouvrirModaleApprobation(demandeId) {
   document.getElementById("modale-resume").textContent =
     `${demandeSelectionnee.personneNom} — ${formaterMontant(demandeSelectionnee.montant)}`;
 
-  // Vérifie que la personne a un spécimen de chèque rattaché.
   const personneDoc = await db.collection("personnes").doc(demandeSelectionnee.personneId).get();
   const personne = personneDoc.data();
   const alerteEl = document.getElementById("modale-alerte-specimen");
@@ -107,7 +110,6 @@ document.getElementById("modale-confirmer").addEventListener("click", async () =
   bouton.textContent = "Envoi en cours…";
 
   try {
-    // Liste personnalisable des destinataires du courriel de paiement.
     const snapDestinataires = await db.collection("destinataires").where("actif", "==", true).get();
     const destinataires = snapDestinataires.docs.map(d => d.data().email);
     if (destinataires.length === 0) {
