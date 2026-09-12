@@ -46,7 +46,7 @@ async function chargerDemandes() {
       <td>${d.categorie || "—"}</td>
       <td><span class="badge ${d.statut}">${libelleStatut(d.statut)}</span></td>
       <td><a href="${d.pieceJointeUrl}" target="_blank" rel="noopener">Voir</a></td>
-      <td>${d.statut === "en_attente" ? `<button class="bouton" data-id="${doc.id}">Approuver</button>` : ""}</td>
+      <td>${d.statut === "en_attente" ? `<button class="bouton" data-id="${doc.id}">Approuver</button>` : ""}${d.statut === "en_cours_paiement" ? `<button class="bouton secondaire" data-marquer-payee="${doc.id}" data-nom="${d.personneNom}">Marquer payée</button>` : ""}</td>
     `;
     corps.appendChild(tr);
   });
@@ -54,6 +54,25 @@ async function chargerDemandes() {
   corps.querySelectorAll("button[data-id]").forEach((bouton) => {
     bouton.addEventListener("click", () => ouvrirModaleApprobation(bouton.dataset.id));
   });
+
+  corps.querySelectorAll("button[data-marquer-payee]").forEach((bouton) => {
+    bouton.addEventListener("click", () => marquerPayeeManuellement(bouton.dataset.marquerPayee, bouton.dataset.nom));
+  });
+}
+
+async function marquerPayeeManuellement(demandeId, nomPersonne) {
+  const confirme = confirm(
+    `Confirmer que la demande de ${nomPersonne} a bel et bien été payée ?\n\n` +
+    `À utiliser seulement si le lien du courriel n'a pas fonctionné ou n'a pas été cliqué.`
+  );
+  if (!confirme) return;
+
+  await db.collection("demandes").doc(demandeId).update({
+    statut: "payee",
+    datePaiement: firebase.firestore.FieldValue.serverTimestamp(),
+    marqueePayeeManuellementPar: profilActuel.nom || profilActuel.email
+  });
+  chargerDemandes();
 }
 
 function libelleStatut(statut) {
