@@ -15,7 +15,7 @@ const firebaseConfig = {
 
 // URL du déploiement Apps Script (se termine par /exec).
 // Voir README.md, section "3. Déployer le serveur Google Apps Script".
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwRQaDmp7-60buyp9jFRIEhhWhA7LKPYohTTICXMKqOqBCcdYqmNugjYwlPOUwFTEuu/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyR8mu6olPOU02e6w0IvseTGgbjz4V4jVOQn78EXOjFyasOM8hzVv9n-98G8DLH-rdW/exec";
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
