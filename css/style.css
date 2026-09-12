@@ -1,12 +1,13 @@
 :root {
-  --vert-club: #1f5c3f;
-  --vert-club-fonce: #14402c;
-  --vert-club-clair: #e7f1eb;
-  --or: #c99a3c;
-  --encre: #202521;
-  --gris: #6b756f;
-  --gris-clair: #d8ded9;
-  --fond: #f6f7f5;
+  /* Couleurs tirées du logo des Rockets de Princeville */
+  --vert-club: #003380;
+  --vert-club-fonce: #001c47;
+  --vert-club-clair: #e2e8f1;
+  --or: #8fb0e0;
+  --encre: #1a1f2b;
+  --gris: #6b7280;
+  --gris-clair: #dbe2ec;
+  --fond: #f4f6fa;
   --blanc: #ffffff;
   --rouge: #a63d3d;
   --rayon: 8px;
@@ -26,28 +27,40 @@ a { color: var(--vert-club); }
 header.entete {
   background: var(--vert-club-fonce);
   color: var(--blanc);
-  padding: 16px 24px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 3px solid var(--vert-club);
 }
 
 header.entete .titre {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
+}
+
+header.entete .titre img.logo {
+  height: 42px;
+  width: auto;
+}
+
+header.entete .titre .textes {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
 }
 
 header.entete .titre h1 {
-  font-size: 18px;
+  font-size: 17px;
   margin: 0;
   font-weight: 600;
   letter-spacing: 0.2px;
 }
 
-header.entete .titre span {
+header.entete .titre .textes span {
   color: var(--or);
-  font-size: 13px;
+  font-size: 12.5px;
 }
 
 header.entete nav a {
@@ -147,14 +160,25 @@ input:focus, select:focus, textarea:focus {
   width: 340px;
 }
 
+.page-connexion {
+  background: var(--vert-club-fonce);
+}
+
 .page-connexion .logo {
   text-align: center;
   margin-bottom: 6px;
 }
 
+.page-connexion .logo img {
+  height: 84px;
+  width: auto;
+  margin-bottom: 10px;
+}
+
 .page-connexion .logo strong {
+  display: block;
   color: var(--vert-club-fonce);
-  font-size: 20px;
+  font-size: 19px;
 }
 
 .page-connexion .logo span {
