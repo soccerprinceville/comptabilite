@@ -37,8 +37,14 @@
       <form id="form-personne">
         <label for="personne-nom">Nom</label>
         <input type="text" id="personne-nom" required>
-        <label for="personne-specimen">Spécimen de chèque (photo ou PDF)</label>
-        <input type="file" id="personne-specimen" accept=".pdf,.jpg,.jpeg,.png,.heic" required>
+
+        <label for="personne-specimen">Spécimen de chèque — téléverser un fichier (facultatif)</label>
+        <input type="file" id="personne-specimen" accept=".pdf,.jpg,.jpeg,.png,.heic">
+
+        <label for="personne-specimen-lien">…ou coller le lien d'un fichier déjà sur le Drive du club (facultatif)</label>
+        <input type="text" id="personne-specimen-lien" placeholder="https://drive.google.com/file/d/…">
+
+        <p class="aide">Le spécimen peut aussi être ajouté plus tard, directement depuis la liste ci-dessus.</p>
         <p class="erreur" id="personne-erreur"></p>
         <button type="submit" class="bouton" id="personne-bouton">Ajouter</button>
       </form>
@@ -67,6 +73,24 @@
       </form>
     </div>
   </main>
+
+  <div id="modale-specimen" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;">
+    <div class="carte" style="width:380px;">
+      <h2>Ajouter le spécimen de chèque</h2>
+      <p class="aide" id="modale-specimen-nom"></p>
+
+      <label for="modale-specimen-fichier">Téléverser un fichier</label>
+      <input type="file" id="modale-specimen-fichier" accept=".pdf,.jpg,.jpeg,.png,.heic">
+
+      <label for="modale-specimen-lien">…ou coller le lien d'un fichier déjà sur le Drive</label>
+      <input type="text" id="modale-specimen-lien" placeholder="https://drive.google.com/file/d/…">
+
+      <p class="erreur" id="modale-specimen-erreur"></p>
+
+      <button class="bouton" id="modale-specimen-confirmer">Enregistrer</button>
+      <button class="bouton secondaire" id="modale-specimen-annuler">Annuler</button>
+    </div>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
