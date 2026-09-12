@@ -48,7 +48,7 @@ async function chargerPersonnes() {
         <small>${infosSpecimen}</small>
       </div>
       <div>
-        ${!p.specimenChequeFileId ? `<button class="bouton secondaire" data-ajouter-specimen="${doc.id}" data-nom="${p.nom}">Ajouter le spécimen</button>` : ""}
+        <button class="bouton secondaire" data-ajouter-specimen="${doc.id}" data-nom="${p.nom}">${p.specimenChequeFileId ? "Modifier le spécimen" : "Ajouter le spécimen"}</button>
         <button class="bouton secondaire" data-retirer="${doc.id}">Retirer</button>
       </div>
     `;
