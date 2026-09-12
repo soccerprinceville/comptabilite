@@ -15,6 +15,18 @@
  * DOSSIER_PIECES_JOINTES_ID, DOSSIER_SPECIMENS_ID.
  */
 
+/**
+ * À exécuter UNE FOIS manuellement depuis l'éditeur (bouton "Exécuter")
+ * pour déclencher la demande d'autorisation Drive + Gmail. Vous pouvez
+ * ensuite l'ignorer ou la supprimer.
+ */
+function testAutorisations() {
+  const props = PropertiesService.getScriptProperties();
+  DriveApp.getFolderById(props.getProperty("DOSSIER_PIECES_JOINTES_ID"));
+  DriveApp.getFolderById(props.getProperty("DOSSIER_SPECIMENS_ID"));
+  Logger.log("Autorisations Drive OK");
+}
+
 function doPost(e) {
   let resultat;
   try {
@@ -23,6 +35,8 @@ function doPost(e) {
       resultat = uploadFichier_(params);
     } else if (params.action === "envoyerCourriel") {
       resultat = envoyerCourriel_(params);
+    } else if (params.action === "lierFichierExistant") {
+      resultat = lierFichierExistant_(params);
     } else {
       throw new Error("Action inconnue : " + params.action);
     }
@@ -57,6 +71,16 @@ function uploadFichier_(params) {
   const fichier = dossier.createFile(blob);
   fichier.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
+  return { fileId: fichier.getId(), url: fichier.getUrl() };
+}
+
+// ---------------------------------------------------------------------
+// Lier un fichier déjà présent sur le Drive (au lieu d'en téléverser un)
+// ---------------------------------------------------------------------
+
+function lierFichierExistant_(params) {
+  const fichier = DriveApp.getFileById(params.fileId);
+  fichier.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   return { fileId: fichier.getId(), url: fichier.getUrl() };
 }
 
