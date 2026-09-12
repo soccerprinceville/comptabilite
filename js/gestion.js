@@ -39,18 +39,34 @@ async function chargerPersonnes() {
   snap.forEach((doc) => {
     const p = doc.data();
     const li = document.createElement("li");
+    const infosSpecimen = p.specimenChequeUrl
+      ? `<a href="${p.specimenChequeUrl}" target="_blank" rel="noopener">Voir le spécimen de chèque</a>`
+      : "Aucun spécimen";
     li.innerHTML = `
       <div class="infos">
         ${p.nom}
-        <small>${p.specimenChequeUrl ? `<a href="${p.specimenChequeUrl}" target="_blank" rel="noopener">Voir le spécimen de chèque</a>` : "Aucun spécimen"}</small>
+        <small>${infosSpecimen}</small>
       </div>
-      <button class="bouton secondaire" data-retirer="${doc.id}">Retirer</button>
+      <div>
+        ${!p.specimenChequeFileId ? `<button class="bouton secondaire" data-ajouter-specimen="${doc.id}" data-nom="${p.nom}">Ajouter le spécimen</button>` : ""}
+        <button class="bouton secondaire" data-retirer="${doc.id}">Retirer</button>
+      </div>
     `;
     liste.appendChild(li);
   });
   liste.querySelectorAll("[data-retirer]").forEach((b) => {
     b.addEventListener("click", () => db.collection("personnes").doc(b.dataset.retirer).update({ actif: false }).then(chargerPersonnes));
   });
+  liste.querySelectorAll("[data-ajouter-specimen]").forEach((b) => {
+    b.addEventListener("click", () => ouvrirModaleSpecimen(b.dataset.ajouterSpecimen, b.dataset.nom));
+  });
+}
+
+// Vérifie s'il existe déjà une personne avec ce nom (peu importe la casse/les espaces).
+async function personneExisteDeja(nom) {
+  const snap = await db.collection("personnes").get();
+  const nomNormalise = nom.trim().toLowerCase();
+  return snap.docs.some(d => (d.data().nom || "").trim().toLowerCase() === nomNormalise);
 }
 
 document.getElementById("form-personne").addEventListener("submit", async (e) => {
@@ -60,22 +76,43 @@ document.getElementById("form-personne").addEventListener("submit", async (e) =>
   erreurEl.style.display = "none";
   const nom = document.getElementById("personne-nom").value.trim();
   const fichier = document.getElementById("personne-specimen").files[0];
-  if (!nom || !fichier) return;
+  const lien = document.getElementById("personne-specimen-lien").value.trim();
+  if (!nom) return;
 
   bouton.disabled = true;
-  bouton.textContent = "Ajout en cours…";
+  bouton.textContent = "Vérification…";
+
   try {
-    const base64 = await fichierEnBase64(fichier);
-    const resultat = await appelerAppsScript("uploadFichier", {
-      dossier: "specimens",
-      nomFichier: `${nom} - specimen cheque - ${fichier.name}`,
-      mimeType: fichier.type,
-      contenuBase64: base64
-    });
+    if (await personneExisteDeja(nom)) {
+      throw new Error(`« ${nom} » existe déjà dans la liste des personnes à rembourser.`);
+    }
+
+    let specimenChequeFileId = null;
+    let specimenChequeUrl = null;
+
+    if (fichier) {
+      bouton.textContent = "Envoi du fichier…";
+      const base64 = await fichierEnBase64(fichier);
+      const resultat = await appelerAppsScript("uploadFichier", {
+        dossier: "specimens",
+        nomFichier: `${nom} - specimen cheque - ${fichier.name}`,
+        mimeType: fichier.type,
+        contenuBase64: base64
+      });
+      specimenChequeFileId = resultat.fileId;
+      specimenChequeUrl = resultat.url;
+    } else if (lien) {
+      const fileId = extraireIdDrive(lien);
+      if (!fileId) throw new Error("Le lien Google Drive fourni ne semble pas valide.");
+      const resultat = await appelerAppsScript("lierFichierExistant", { fileId });
+      specimenChequeFileId = resultat.fileId;
+      specimenChequeUrl = resultat.url;
+    }
+
     await db.collection("personnes").add({
       nom,
-      specimenChequeFileId: resultat.fileId,
-      specimenChequeUrl: resultat.url,
+      specimenChequeFileId,
+      specimenChequeUrl,
       actif: true,
       dateAjout: firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -87,6 +124,71 @@ document.getElementById("form-personne").addEventListener("submit", async (e) =>
   } finally {
     bouton.disabled = false;
     bouton.textContent = "Ajouter";
+  }
+});
+
+// --- Ajouter un spécimen plus tard à une personne existante ---
+
+let personneSpecimenId = null;
+
+function ouvrirModaleSpecimen(id, nom) {
+  personneSpecimenId = id;
+  document.getElementById("modale-specimen-nom").textContent = `Personne : ${nom}`;
+  document.getElementById("modale-specimen-fichier").value = "";
+  document.getElementById("modale-specimen-lien").value = "";
+  document.getElementById("modale-specimen-erreur").style.display = "none";
+  document.getElementById("modale-specimen").style.display = "flex";
+}
+
+document.getElementById("modale-specimen-annuler").addEventListener("click", () => {
+  document.getElementById("modale-specimen").style.display = "none";
+});
+
+document.getElementById("modale-specimen-confirmer").addEventListener("click", async () => {
+  const bouton = document.getElementById("modale-specimen-confirmer");
+  const erreurEl = document.getElementById("modale-specimen-erreur");
+  erreurEl.style.display = "none";
+  const fichier = document.getElementById("modale-specimen-fichier").files[0];
+  const lien = document.getElementById("modale-specimen-lien").value.trim();
+
+  if (!fichier && !lien) {
+    erreurEl.textContent = "Choisissez un fichier ou collez un lien.";
+    erreurEl.style.display = "block";
+    return;
+  }
+
+  bouton.disabled = true;
+  bouton.textContent = "Enregistrement…";
+
+  try {
+    let specimenChequeFileId, specimenChequeUrl;
+    if (fichier) {
+      const base64 = await fichierEnBase64(fichier);
+      const resultat = await appelerAppsScript("uploadFichier", {
+        dossier: "specimens",
+        nomFichier: `specimen cheque - ${fichier.name}`,
+        mimeType: fichier.type,
+        contenuBase64: base64
+      });
+      specimenChequeFileId = resultat.fileId;
+      specimenChequeUrl = resultat.url;
+    } else {
+      const fileId = extraireIdDrive(lien);
+      if (!fileId) throw new Error("Le lien Google Drive fourni ne semble pas valide.");
+      const resultat = await appelerAppsScript("lierFichierExistant", { fileId });
+      specimenChequeFileId = resultat.fileId;
+      specimenChequeUrl = resultat.url;
+    }
+
+    await db.collection("personnes").doc(personneSpecimenId).update({ specimenChequeFileId, specimenChequeUrl });
+    document.getElementById("modale-specimen").style.display = "none";
+    chargerPersonnes();
+  } catch (err) {
+    erreurEl.textContent = "Erreur : " + err.message;
+    erreurEl.style.display = "block";
+  } finally {
+    bouton.disabled = false;
+    bouton.textContent = "Enregistrer";
   }
 });
 

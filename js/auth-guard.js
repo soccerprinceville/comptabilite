@@ -43,6 +43,17 @@ function remplirEntete(profil) {
   }
 }
 
+// Accepte soit un lien complet Google Drive, soit directement un ID de fichier.
+function extraireIdDrive(texte) {
+  const t = texte.trim();
+  const motifs = [/\/d\/([a-zA-Z0-9_-]{15,})/, /[?&]id=([a-zA-Z0-9_-]{15,})/];
+  for (const motif of motifs) {
+    const trouve = t.match(motif);
+    if (trouve) return trouve[1];
+  }
+  if (/^[a-zA-Z0-9_-]{15,}$/.test(t)) return t;
+  return null;
+}
 function genererToken() {
   return Array.from(crypto.getRandomValues(new Uint8Array(16)))
     .map(b => b.toString(16).padStart(2, "0")).join("");
