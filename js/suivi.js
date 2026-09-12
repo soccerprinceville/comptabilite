@@ -124,7 +124,7 @@ document.getElementById("modale-confirmer").addEventListener("click", async () =
       dateApprobation: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    const lienConfirmation = `${APPS_SCRIPT_URL}?action=confirmerPaiement&id=${demandeSelectionnee.id}&token=${demandeSelectionnee.token}`;
+    const lienConfirmation = `${SITE_URL}confirmation.html?id=${demandeSelectionnee.id}&token=${demandeSelectionnee.token}`;
 
     await appelerAppsScript("envoyerCourriel", {
       destinataires,

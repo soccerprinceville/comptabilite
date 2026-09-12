@@ -17,6 +17,10 @@ const firebaseConfig = {
 // Voir README.md, section "3. Déployer le serveur Google Apps Script".
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxA7ehAS2dNUGJFYC8wsykbS7uOEfaEj82Xrrp-v0zVAh37HUjiTEnEraoPkl_UrGO2/exec";
 
+// URL de votre site publié sur GitHub Pages (utilisée pour construire le lien
+// de confirmation de paiement envoyé par courriel).
+const SITE_URL = "https://soccerprinceville.github.io/comptabilite/";
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
