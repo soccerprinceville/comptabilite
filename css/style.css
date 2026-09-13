@@ -173,7 +173,7 @@ main {
 .barre-laterale .lien-deconnexion {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
   color: var(--blanc);
   text-decoration: none;
   padding: 13px 24px;
@@ -206,15 +206,21 @@ main {
 
 .barre-laterale .lien-deconnexion {
   margin-top: auto;
-  border-top: 1px solid rgba(255,255,255,0.15);
 }
 
 .barre-laterale .icone {
-  display: none;
-  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 20px;
-  text-align: center;
+  height: 20px;
   flex-shrink: 0;
+  color: var(--blanc);
+}
+
+.barre-laterale .icone svg {
+  width: 20px;
+  height: 20px;
 }
 
 .barre-laterale.fermee nav a,
@@ -224,7 +230,6 @@ main {
   justify-content: center;
 }
 
-.barre-laterale.fermee .icone { display: inline-block; }
 .barre-laterale.fermee .texte { display: none; }
 
 .contenu-principal {
