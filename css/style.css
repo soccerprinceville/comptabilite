@@ -8,7 +8,7 @@
   --encre: #edf1f7;
   --gris: #c3d0e3;
   --gris-clair: rgba(255,255,255,0.18);
-  --fond: #000000;
+  --fond: #001c47;
   --blanc: #ffffff;
   --rouge: #ff8f87;
   --rayon: 8px;
@@ -263,8 +263,8 @@ select, textarea {
   border: 1px solid var(--gris-clair);
   border-radius: var(--rayon);
   font-size: 14px;
-  background: #12161d;
-  color: var(--encre);
+  background: var(--blanc);
+  color: #111111;
 }
 
 input:focus, select:focus, textarea:focus {
