@@ -199,8 +199,10 @@ main {
   -moz-appearance: none;
   appearance: none;
   background-color: transparent;
-  color: inherit;
-  font: inherit;
+  color: var(--blanc);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .barre-laterale .icone {
