@@ -30,30 +30,47 @@
     <div class="contenu-principal">
       <main>
     <div class="carte">
-      <h2>Suivi des demandes</h2>
+      <h2>Suivi des demandes et transactions</h2>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="flex:1;min-width:160px;">
+          <label for="filtre-compte">Compte</label>
+          <select id="filtre-compte"></select>
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label for="filtre-annee">Année</label>
+          <select id="filtre-annee"></select>
+        </div>
+        <div>
+          <button type="button" class="bouton" id="bouton-nouvelle-transaction" style="margin-top:0;">+ Transaction manuelle</button>
+        </div>
+      </div>
+
       <p class="aide" id="ligne-solde-initial"></p>
+
       <table class="demandes">
         <thead>
           <tr>
+            <th></th>
             <th>Date</th>
-            <th>Personne</th>
+            <th>Personne / description</th>
             <th>Montant</th>
             <th>Solde</th>
             <th>Catégorie</th>
             <th>Statut</th>
-            <th>Pièce jointe</th>
+            <th></th>
             <th></th>
           </tr>
         </thead>
         <tbody id="corps-tableau"></tbody>
       </table>
-      <p id="message-vide" class="aide" style="display:none">Aucune demande pour l'instant.</p>
+      <p id="message-vide" class="aide" style="display:none">Aucune demande ni transaction pour ce compte/année.</p>
     </div>
-  </main>
+      </main>
     </div>
   </div>
 
-  <!-- Fenêtre modale d'approbation -->
+  <!-- Fenêtre modale d'approbation d'une demande -->
   <div id="modale-approbation" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;">
     <div class="carte" style="width:380px;">
       <h2>Approuver la demande</h2>
@@ -67,6 +84,37 @@
 
       <button class="bouton" id="modale-confirmer">Approuver et envoyer le courriel</button>
       <button class="bouton secondaire" id="modale-annuler">Annuler</button>
+    </div>
+  </div>
+
+  <!-- Fenêtre modale de transaction manuelle (ajout/modification) -->
+  <div id="modale-transaction" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;">
+    <div class="carte" style="width:380px;">
+      <h2 id="modale-transaction-titre">Nouvelle transaction</h2>
+
+      <label>Type</label>
+      <select id="transaction-type">
+        <option value="revenu">Revenu (entrée d'argent)</option>
+        <option value="depense">Dépense (sortie d'argent)</option>
+      </select>
+
+      <label for="transaction-description">Description</label>
+      <input type="text" id="transaction-description" placeholder="Ex. Subvention municipale">
+
+      <label for="transaction-montant">Montant ($)</label>
+      <input type="number" id="transaction-montant" step="0.01" min="0.01">
+
+      <label for="transaction-date">Date</label>
+      <input type="date" id="transaction-date">
+
+      <label for="transaction-categorie">Catégorie</label>
+      <select id="transaction-categorie"></select>
+
+      <p class="erreur" id="transaction-erreur"></p>
+
+      <button class="bouton" id="transaction-confirmer">Enregistrer</button>
+      <button class="bouton secondaire" id="transaction-supprimer" style="display:none;">Supprimer</button>
+      <button class="bouton secondaire" id="transaction-annuler">Annuler</button>
     </div>
   </div>
 

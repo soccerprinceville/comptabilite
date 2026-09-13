@@ -40,6 +40,21 @@ service cloud.firestore {
       allow write: if estComptable();
     }
 
+    match /comptes/{id} {
+      allow read: if estConnecte();
+      allow write: if estComptable();
+    }
+
+    match /soldesInitiaux/{id} {
+      allow read: if estComptable();
+      allow write: if estComptable();
+    }
+
+    match /transactions/{id} {
+      allow read: if estComptable();
+      allow write: if estComptable();
+    }
+
     // Directeur et comptable peuvent créer une demande.
     // Seul le comptable peut la modifier (approbation).
     // La confirmation de paiement passe par Apps Script (compte de service),
