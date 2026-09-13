@@ -16,12 +16,34 @@ function protegerPage(rolesAutorises) {
       }
       const profil = { uid: user.uid, email: user.email, ...doc.data() };
       if (rolesAutorises && !rolesAutorises.includes(profil.role)) {
-        window.location.href = "dashboard.html";
+        window.location.href = "nouvelle-demande.html";
         return;
       }
       remplirEntete(profil);
+      initialiserMenu();
       resolve(profil);
     });
+  });
+}
+
+function initialiserMenu() {
+  const barre = document.getElementById("barre-laterale");
+  const bouton = document.getElementById("bouton-menu");
+  if (!barre || !bouton) return;
+
+  if (localStorage.getItem("menuFerme") === "true") {
+    barre.classList.add("fermee");
+  }
+
+  bouton.addEventListener("click", () => {
+    barre.classList.toggle("fermee");
+    localStorage.setItem("menuFerme", barre.classList.contains("fermee"));
+  });
+
+  // Met en évidence le lien de la page courante.
+  const pageActuelle = window.location.pathname.split("/").pop();
+  barre.querySelectorAll("nav a").forEach((lien) => {
+    if (lien.getAttribute("href") === pageActuelle) lien.classList.add("actif");
   });
 }
 
