@@ -18,7 +18,11 @@
 body {
   margin: 0;
   font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  background: var(--fond);
+  background-color: #050608;
+  background-image:
+    linear-gradient(rgba(0, 82, 204, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 82, 204, 0.35) 1px, transparent 1px);
+  background-size: 42px 42px;
   color: var(--encre);
 }
 
@@ -297,10 +301,6 @@ input:focus, select:focus, textarea:focus {
 
 .page-connexion .carte {
   width: 340px;
-}
-
-.page-connexion {
-  background: var(--vert-club-fonce);
 }
 
 .page-connexion .logo {
