@@ -31,21 +31,40 @@ header.entete {
     repeating-linear-gradient(120deg, rgba(255,255,255,0.05) 0 14px, transparent 14px 32px),
     linear-gradient(120deg, var(--vert-club-fonce) 0%, var(--vert-club) 65%, #024099 100%);
   color: var(--blanc);
-  padding: 14px 28px;
-  display: flex;
+  padding: 12px 20px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 14px;
   box-shadow: 0 4px 14px rgba(0,20,60,0.35);
   border-bottom: 3px solid var(--or);
   overflow: hidden;
 }
 
+.bouton-hamburger {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.5);
+  color: var(--blanc);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--rayon);
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.bouton-hamburger:hover { background: rgba(255,255,255,0.2); }
+
 header.entete .titre {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 14px;
   position: relative;
   z-index: 1;
+  text-align: left;
 }
 
 header.entete .titre img.logo {
@@ -61,6 +80,12 @@ header.entete .titre .textes {
   display: flex;
   flex-direction: column;
   line-height: 1.25;
+}
+
+header.entete .zone-droite {
+  display: flex;
+  align-items: center;
+  justify-self: end;
 }
 
 header.entete .titre h1 {
@@ -120,6 +145,58 @@ main {
   max-width: 980px;
   margin: 0 auto;
   padding: 28px 20px 60px;
+}
+
+.corps-page {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(100vh - 74px);
+}
+
+.barre-laterale {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--vert-club-fonce);
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+
+.barre-laterale.fermee {
+  width: 0;
+}
+
+.barre-laterale nav {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 0;
+  width: 220px;
+}
+
+.barre-laterale nav a {
+  color: var(--blanc);
+  text-decoration: none;
+  padding: 13px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.82;
+  border-left: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.barre-laterale nav a:hover {
+  opacity: 1;
+  background: rgba(255,255,255,0.06);
+}
+
+.barre-laterale nav a.actif {
+  opacity: 1;
+  background: rgba(255,255,255,0.1);
+  border-left-color: var(--or);
+}
+
+.contenu-principal {
+  flex: 1;
+  min-width: 0;
 }
 
 .carte {
