@@ -118,23 +118,7 @@ header.entete nav a.actif {
   border-bottom-color: var(--or);
 }
 
-#bouton-deconnexion {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.5);
-  color: var(--blanc);
-  padding: 7px 14px;
-  border-radius: var(--rayon);
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  position: relative;
-  z-index: 1;
-  transition: background 0.15s ease;
-}
 
-#bouton-deconnexion:hover {
-  background: rgba(255,255,255,0.2);
-}
 
 main {
   max-width: 980px;
