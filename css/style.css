@@ -27,16 +27,13 @@ a { color: var(--vert-club); }
 
 header.entete {
   position: relative;
-  background: linear-gradient(120deg, var(--vert-club-fonce) 0%, var(--vert-club) 65%, #024099 100%);
-  background-image:
-    repeating-linear-gradient(120deg, rgba(255,255,255,0.05) 0 14px, transparent 14px 32px),
-    linear-gradient(120deg, var(--vert-club-fonce) 0%, var(--vert-club) 65%, #024099 100%);
+  background: #000000;
   color: var(--blanc);
   padding: 12px 20px;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  box-shadow: 0 4px 14px rgba(0,20,60,0.35);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.5);
   border-bottom: 3px solid var(--or);
   overflow: hidden;
 }
@@ -136,7 +133,7 @@ main {
 .barre-laterale {
   width: 220px;
   flex-shrink: 0;
-  background: var(--vert-club-fonce);
+  background: #000000;
   overflow: hidden;
   transition: width 0.2s ease;
   display: flex;
