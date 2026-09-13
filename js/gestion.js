@@ -1,29 +1,99 @@
 protegerPage(["comptable"]).then(() => {
-  chargerSoldeInitial();
+  chargerComptes();
+  chargerSoldes();
   chargerPersonnes();
   chargerCategories();
   chargerDestinataires();
 });
 
-// --- Solde initial du compte ---
+// --- Comptes ---
 
-async function chargerSoldeInitial() {
-  const doc = await db.collection("parametres").doc("general").get();
-  const champ = document.getElementById("solde-initial");
-  champ.value = doc.exists && typeof doc.data().soldeInitial === "number" ? doc.data().soldeInitial : 0;
+async function chargerComptes() {
+  const liste = document.getElementById("liste-comptes");
+  const selectSolde = document.getElementById("solde-compte");
+  liste.innerHTML = "";
+  selectSolde.innerHTML = "";
+
+  const snap = await db.collection("comptes").where("actif", "==", true).orderBy("nom").get();
+  if (snap.empty) {
+    liste.innerHTML = "<li class='aide'>Aucun compte. Ajoutez-en au moins un (ex. Compte courant).</li>";
+    return;
+  }
+  snap.forEach((doc) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<div class="infos">${doc.data().nom}</div><button class="bouton secondaire" data-retirer="${doc.id}">Retirer</button>`;
+    liste.appendChild(li);
+
+    const option = document.createElement("option");
+    option.value = doc.id;
+    option.textContent = doc.data().nom;
+    selectSolde.appendChild(option);
+  });
+  liste.querySelectorAll("[data-retirer]").forEach((b) => {
+    b.addEventListener("click", () => db.collection("comptes").doc(b.dataset.retirer).update({ actif: false }).then(chargerComptes));
+  });
 }
 
-document.getElementById("solde-bouton").addEventListener("click", async () => {
-  const champ = document.getElementById("solde-initial");
+document.getElementById("form-compte").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const champ = document.getElementById("compte-nom");
+  const nom = champ.value.trim();
+  if (!nom) return;
+  await db.collection("comptes").add({ nom, actif: true });
+  champ.value = "";
+  chargerComptes();
+});
+
+// --- Soldes initiaux (par compte + année) ---
+
+async function chargerSoldes() {
+  const liste = document.getElementById("liste-soldes");
+  liste.innerHTML = "";
+  const snap = await db.collection("soldesInitiaux").get();
+  if (snap.empty) {
+    liste.innerHTML = "<li class='aide'>Aucun solde initial défini pour l'instant.</li>";
+    return;
+  }
+  const comptesSnap = await db.collection("comptes").get();
+  const nomsComptes = {};
+  comptesSnap.forEach(c => nomsComptes[c.id] = c.data().nom);
+
+  const docs = snap.docs.sort((a, b) => (b.data().annee || 0) - (a.data().annee || 0));
+  docs.forEach((doc) => {
+    const d = doc.data();
+    const nomCompte = nomsComptes[d.compteId] || "(compte supprimé)";
+    const li = document.createElement("li");
+    li.innerHTML = `<div class="infos">${nomCompte} — ${d.annee}<small>Solde initial : ${formaterMontant(d.soldeInitial)}</small></div>`;
+    liste.appendChild(li);
+  });
+}
+
+document.getElementById("form-solde").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const bouton = document.getElementById("solde-bouton");
   const erreurEl = document.getElementById("solde-erreur");
   erreurEl.style.display = "none";
-  const valeur = parseFloat(champ.value);
-  if (isNaN(valeur)) {
-    erreurEl.textContent = "Entrez un montant valide.";
+
+  const compteId = document.getElementById("solde-compte").value;
+  const annee = parseInt(document.getElementById("solde-annee").value, 10);
+  const montant = parseFloat(document.getElementById("solde-montant").value);
+
+  if (!compteId || !annee || isNaN(montant)) {
+    erreurEl.textContent = "Remplissez tous les champs correctement.";
     erreurEl.style.display = "block";
     return;
   }
-  await db.collection("parametres").doc("general").set({ soldeInitial: valeur }, { merge: true });
+
+  bouton.disabled = true;
+  try {
+    await db.collection("soldesInitiaux").doc(`${compteId}_${annee}`).set({
+      compteId, annee, soldeInitial: montant
+    });
+    document.getElementById("form-solde").reset();
+    chargerSoldes();
+  } finally {
+    bouton.disabled = false;
+  }
 });
 
 // --- Personnes à rembourser ---

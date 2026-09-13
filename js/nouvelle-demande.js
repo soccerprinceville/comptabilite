@@ -2,8 +2,20 @@ let profilActuel = null;
 
 protegerPage(["comptable", "directeur"]).then((profil) => {
   profilActuel = profil;
+  chargerComptes();
   chargerPersonnes();
 });
+
+async function chargerComptes() {
+  const select = document.getElementById("compte");
+  const snap = await db.collection("comptes").where("actif", "==", true).orderBy("nom").get();
+  snap.forEach((doc) => {
+    const option = document.createElement("option");
+    option.value = doc.id;
+    option.textContent = doc.data().nom;
+    select.appendChild(option);
+  });
+}
 
 async function chargerPersonnes() {
   const select = document.getElementById("personne");
@@ -24,19 +36,20 @@ document.getElementById("form-demande").addEventListener("submit", async (e) => 
   erreurEl.style.display = "none";
   succesEl.style.display = "none";
 
+  const selectCompte = document.getElementById("compte");
+  const compteId = selectCompte.value;
   const selectPersonne = document.getElementById("personne");
   const personneId = selectPersonne.value;
   const personneNom = selectPersonne.selectedOptions[0]?.textContent || "";
   const montant = parseFloat(document.getElementById("montant").value);
   const fichier = document.getElementById("piece-jointe").files[0];
 
-  if (!personneId || !montant || !fichier) return;
+  if (!compteId || !personneId || !montant || !fichier) return;
 
   bouton.disabled = true;
   bouton.textContent = "Envoi en cours…";
 
   try {
-    // 1. Dépose la pièce jointe sur Google Drive via Apps Script.
     const base64 = await fichierEnBase64(fichier);
     const resultatUpload = await appelerAppsScript("uploadFichier", {
       dossier: "demandes",
@@ -45,8 +58,10 @@ document.getElementById("form-demande").addEventListener("submit", async (e) => 
       contenuBase64: base64
     });
 
-    // 2. Crée la demande dans Firestore, statut "en_attente".
     await db.collection("demandes").add({
+      compteId,
+      annee: new Date().getFullYear(),
+      ordre: Date.now(),
       personneId,
       personneNom,
       montant,
