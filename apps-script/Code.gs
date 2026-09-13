@@ -37,6 +37,8 @@ function doPost(e) {
       resultat = envoyerCourriel_(params);
     } else if (params.action === "lierFichierExistant") {
       resultat = lierFichierExistant_(params);
+    } else if (params.action === "confirmerPaiement") {
+      resultat = { message: confirmerPaiementLogique_(params.id, params.token) };
     } else {
       throw new Error("Action inconnue : " + params.action);
     }
@@ -128,27 +130,62 @@ function confirmerPaiement_(id, token) {
   if (!id || !token) {
     return HtmlService.createHtmlOutput("Lien invalide.");
   }
+  try {
+    const message = confirmerPaiementLogique_(id, token);
+    return HtmlService.createHtmlOutput(`<p>✔ ${message}</p>`);
+  } catch (err) {
+    return HtmlService.createHtmlOutput(err.message);
+  }
+}
+
+// Logique partagée : utilisée par doGet (lien direct, HTML) et par doPost
+// (appel depuis confirmation.html sur le site, en JSON). Lève une erreur si
+// le lien est invalide ou déjà utilisé ; retourne un message de succès sinon.
+function confirmerPaiementLogique_(id, token) {
+  if (!id || !token) {
+    throw new Error("Lien invalide.");
+  }
 
   const demande = firestoreGetDoc_("demandes", id);
   if (!demande) {
-    return HtmlService.createHtmlOutput("Demande introuvable.");
+    throw new Error("Demande introuvable.");
   }
   if (demande.token !== token) {
-    return HtmlService.createHtmlOutput("Lien invalide ou expiré.");
+    throw new Error("Lien invalide ou expiré.");
   }
   if (demande.statut === "payee") {
-    return HtmlService.createHtmlOutput("Cette demande a déjà été marquée comme payée.");
+    return "Cette demande a déjà été marquée comme payée.";
   }
 
-  const aujourdhui = new Date().toISOString();
+  const nouvelOrdre = calculerOrdreApresDernierePayees_(demande.compteId, demande.annee, id, demande.ordre);
+
   firestorePatchDoc_("demandes", id, {
     statut: "payee",
-    datePaiement: aujourdhui
+    datePaiement: new Date().toISOString(),
+    ordre: nouvelOrdre
   });
 
-  return HtmlService.createHtmlOutput(
-    `<p>✔ Merci ! La demande de <strong>${demande.personneNom}</strong> a été marquée comme <strong>payée</strong> en date d'aujourd'hui.</p>`
-  );
+  return `Merci ! La demande de <strong>${demande.personneNom}</strong> a été marquée comme <strong>payée</strong> en date d'aujourd'hui.`;
+}
+
+// Trouve le bon "ordre" pour placer une demande fraîchement payée juste après
+// la dernière transaction/demande déjà réglée du même compte et de la même année.
+function calculerOrdreApresDernierePayees_(compteId, annee, idExclu, ordreActuel) {
+  const demandes = firestoreQuerierCollection_("demandes", compteId, annee)
+    .filter(d => d.id !== idExclu);
+  const transactions = firestoreQuerierCollection_("transactions", compteId, annee);
+  const autres = [...demandes, ...transactions];
+
+  const regles = autres.filter(item => item.type === "transaction" || item.statut === "payee");
+  if (regles.length === 0) {
+    const minOrdre = autres.length ? Math.min(...autres.map(i => i.ordre || 0)) : (ordreActuel || Date.now());
+    return minOrdre - 1;
+  }
+  const dernierOrdre = Math.max(...regles.map(i => i.ordre || 0));
+  const suivants = autres.filter(i => (i.ordre || 0) > dernierOrdre);
+  if (suivants.length === 0) return dernierOrdre + 1;
+  const prochainOrdre = Math.min(...suivants.map(i => i.ordre || 0));
+  return (dernierOrdre + prochainOrdre) / 2;
 }
 
 // ---------------------------------------------------------------------
@@ -180,6 +217,46 @@ function firestoreGetDoc_(collection, id) {
   });
   if (reponse.getResponseCode() !== 200) return null;
   return firestoreVersFields_(JSON.parse(reponse.getContentText()).fields || {});
+}
+
+// Requête simple : tous les documents d'une collection où compteId==X et
+// annee==Y. Utilisée pour recalculer l'ordre lors d'une confirmation de paiement.
+function firestoreQuerierCollection_(collection, compteId, annee) {
+  const jeton = getServiceOAuth_().getAccessToken();
+  const idProjet = PropertiesService.getScriptProperties().getProperty("FIREBASE_PROJECT_ID");
+  const url = `https://firestore.googleapis.com/v1/projects/${idProjet}/databases/(default)/documents:runQuery`;
+
+  const requete = {
+    structuredQuery: {
+      from: [{ collectionId: collection }],
+      where: {
+        compositeFilter: {
+          op: "AND",
+          filters: [
+            { fieldFilter: { field: { fieldPath: "compteId" }, op: "EQUAL", value: { stringValue: compteId } } },
+            { fieldFilter: { field: { fieldPath: "annee" }, op: "EQUAL", value: { integerValue: String(annee) } } }
+          ]
+        }
+      }
+    }
+  };
+
+  const reponse = UrlFetchApp.fetch(url, {
+    method: "post",
+    contentType: "application/json",
+    headers: { Authorization: "Bearer " + jeton },
+    payload: JSON.stringify(requete),
+    muteHttpExceptions: true
+  });
+
+  const resultats = JSON.parse(reponse.getContentText());
+  return resultats
+    .filter(r => r.document)
+    .map(r => {
+      const id = r.document.name.split("/").pop();
+      const champs = firestoreVersFields_(r.document.fields || {});
+      return { id, type: collection === "transactions" ? "transaction" : "demande", ...champs };
+    });
 }
 
 function firestorePatchDoc_(collection, id, valeurs) {
