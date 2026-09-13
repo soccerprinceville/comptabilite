@@ -1,15 +1,16 @@
 :root {
   /* Couleurs tirées du logo des Rockets de Princeville */
-  --vert-club: #003380;
+  --vert-club: #0047ab;
   --vert-club-fonce: #001c47;
-  --vert-club-clair: #e2e8f1;
+  --vert-club-clair: #16233a;
   --or: #8fb0e0;
-  --encre: #1a1f2b;
-  --gris: #6b7280;
-  --gris-clair: #dbe2ec;
-  --fond: #f4f6fa;
+  --carte-fond: #0a0c10;
+  --encre: #edf1f7;
+  --gris: #a6b1c2;
+  --gris-clair: #2b3648;
+  --fond: #0047ab;
   --blanc: #ffffff;
-  --rouge: #a63d3d;
+  --rouge: #e0685f;
   --rayon: 8px;
 }
 
@@ -18,11 +19,7 @@
 body {
   margin: 0;
   font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  background-color: #050608;
-  background-image:
-    linear-gradient(rgba(0, 82, 204, 0.35) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 82, 204, 0.35) 1px, transparent 1px);
-  background-size: 42px 42px;
+  background-color: var(--fond);
   color: var(--encre);
 }
 
@@ -239,17 +236,18 @@ main {
 }
 
 .carte {
-  background: var(--blanc);
+  background: var(--carte-fond);
   border: 1px solid var(--gris-clair);
   border-radius: var(--rayon);
   padding: 22px;
   margin-bottom: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
 }
 
 .carte h2 {
   margin-top: 0;
   font-size: 17px;
-  color: var(--vert-club-fonce);
+  color: var(--blanc);
 }
 
 label {
@@ -261,17 +259,19 @@ label {
 }
 
 input[type=text], input[type=email], input[type=password], input[type=number],
+input[type=date],
 select, textarea {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--gris-clair);
   border-radius: var(--rayon);
   font-size: 14px;
-  background: var(--blanc);
+  background: #12161d;
+  color: var(--encre);
 }
 
 input:focus, select:focus, textarea:focus {
-  outline: 2px solid var(--vert-club);
+  outline: 2px solid var(--or);
   outline-offset: 1px;
 }
 
@@ -288,7 +288,8 @@ input:focus, select:focus, textarea:focus {
 }
 
 .bouton:hover { background: var(--vert-club-fonce); }
-.bouton.secondaire { background: var(--gris); }
+.bouton.secondaire { background: #3b4658; }
+.bouton.secondaire:hover { background: #4a5770; }
 .bouton.danger { background: var(--rouge); }
 .bouton:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -316,7 +317,7 @@ input:focus, select:focus, textarea:focus {
 
 .page-connexion .logo strong {
   display: block;
-  color: var(--vert-club-fonce);
+  color: var(--blanc);
   font-size: 19px;
 }
 
