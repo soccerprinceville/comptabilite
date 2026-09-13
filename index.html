@@ -35,7 +35,7 @@
   <script>
     // Si déjà connecté, on saute directement au tableau de bord.
     auth.onAuthStateChanged((user) => {
-      if (user) window.location.href = "dashboard.html";
+      if (user) window.location.href = "nouvelle-demande.html";
     });
 
     document.getElementById("form-connexion").addEventListener("submit", async (e) => {
@@ -46,7 +46,7 @@
       const motDePasse = document.getElementById("mot-de-passe").value;
       try {
         await auth.signInWithEmailAndPassword(courriel, motDePasse);
-        window.location.href = "dashboard.html";
+        window.location.href = "nouvelle-demande.html";
       } catch (err) {
         erreurEl.textContent = "Courriel ou mot de passe invalide.";
         erreurEl.style.display = "block";

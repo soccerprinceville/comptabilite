@@ -8,6 +8,7 @@
 </head>
 <body>
   <header class="entete">
+    <button id="bouton-menu" class="bouton-hamburger" aria-label="Menu">☰</button>
     <div class="titre">
       <img class="logo" src="assets/logo-rockets.png" alt="Logo Rockets de Princeville">
       <div class="textes">
@@ -15,13 +16,21 @@
         <span id="entete-utilisateur"></span>
       </div>
     </div>
-    <div>
-      <nav style="display:inline"><a href="dashboard.html">Accueil</a></nav>
+    <div class="zone-droite">
       <button id="bouton-deconnexion">Déconnexion</button>
     </div>
   </header>
 
-  <main>
+  <div class="corps-page">
+    <aside class="barre-laterale" id="barre-laterale">
+      <nav>
+        <a href="nouvelle-demande.html">Nouvelle demande</a>
+        <a href="suivi.html" data-role-requise="comptable">Suivi</a>
+        <a href="gestion.html" data-role-requise="comptable">Gestion</a>
+      </nav>
+    </aside>
+    <div class="contenu-principal">
+      <main>
     <div class="carte">
       <h2>Nouvelle demande de remboursement</h2>
       <form id="form-demande">
@@ -47,6 +56,8 @@
       </form>
     </div>
   </main>
+    </div>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
