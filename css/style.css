@@ -4,13 +4,13 @@
   --vert-club-fonce: #001c47;
   --vert-club-clair: #16233a;
   --or: #8fb0e0;
-  --carte-fond: #0a0c10;
+  --carte-fond: #0047ab;
   --encre: #edf1f7;
-  --gris: #a6b1c2;
-  --gris-clair: #2b3648;
-  --fond: #0047ab;
+  --gris: #c3d0e3;
+  --gris-clair: rgba(255,255,255,0.18);
+  --fond: #000000;
   --blanc: #ffffff;
-  --rouge: #e0685f;
+  --rouge: #ff8f87;
   --rayon: 8px;
 }
 
@@ -27,7 +27,7 @@ a { color: var(--vert-club); }
 
 header.entete {
   position: relative;
-  background: #000000;
+  background: var(--vert-club);
   color: var(--blanc);
   padding: 12px 20px;
   display: grid;
@@ -133,7 +133,7 @@ main {
 .barre-laterale {
   width: 220px;
   flex-shrink: 0;
-  background: #000000;
+  background: var(--vert-club);
   overflow: hidden;
   transition: width 0.2s ease;
   display: flex;
